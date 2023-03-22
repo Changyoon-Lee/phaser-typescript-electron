@@ -1,27 +1,58 @@
 import Phaser from "phaser";
-
+import Player from "./Player"
 export default class Stage extends Phaser.Scene {
     constructor() {
         super("stage") // 이름 지정
     }
 
     preload() {
-        this.load.image("background", "assets/background/Bridges1800x1200.jpg")
+        this.load.image("background", "assets/background/Bridges1800x1200.jpg") //배경
+        this.load.spritesheet("playerIdle", "assets/character/Samurai/Idle.png", { frameWidth: 128, frameHeight: 128 })//사진자르기
+        this.load.spritesheet("playerWalk", "assets/character/Samurai/Walk.png", { frameWidth: 128, frameHeight: 128 })//사진자르기
+        this.load.spritesheet("playerRun", "assets/character/Samurai/Run.png", { frameWidth: 128, frameHeight: 128 })//사진자르기
+        this.load.spritesheet("playerAttack1", "assets/character/Samurai/Attack_1.png", { frameWidth: 128, frameHeight: 128 })//사진자르기
+        this.load.spritesheet("playerAttack2", "assets/character/Samurai/Attack_2.png", { frameWidth: 128, frameHeight: 128 })//사진자르기
+        this.load.spritesheet("playerAttack3", "assets/character/Samurai/Attack_3.png", { frameWidth: 128, frameHeight: 128 })//사진자르기
+        this.load.spritesheet("playerDead", "assets/character/Samurai/Dead.png", { frameWidth: 128, frameHeight: 128 })//사진자르기
+        this.load.spritesheet("playerHurt", "assets/character/Samurai/Hurt.png", { frameWidth: 128, frameHeight: 128 })//사진자르기
     }
     create() {
-        const {x, y, width, height} = this.cameras.main;//main camera의 좌표,크기정보
-        console.log(x,y,width,height);
+        const { x, y, width, height } = this.cameras.main;//main camera의 좌표,크기정보
+
         const center = {
-            x: x+width/2,
-            y: y+height/2
+            x: x + width / 2,
+            y: y + height / 2
         }
         //background 설정
-        const background = this.add.tileSprite(x,y,1800,1200, "background").setOrigin(0).setScale(width/1800,height/1200);
-        //제목
-        
-    }
-    
-    update() {
+        const background = this.add.tileSprite(x, y, 1800, 1200, "background").setOrigin(0).setScale(width / 1800, height / 1200);
 
+        const keys = ['idle', 'walk', 'run', 'attack1', 'attack2', 'attack3', 'dead', 'hurt'];
+        this.anims.create({ key: "idle", frames: this.anims.generateFrameNumbers('playerIdle', { frames: [0, 1, 2, 3] }), frameRate: 6, repeat: -1 })
+        this.anims.create({ key: "walk", frames: this.anims.generateFrameNumbers('playerWalk', {}), frameRate: 8, repeat: -1 })
+        this.anims.create({ key: "run", frames: this.anims.generateFrameNumbers('playerRun', {}), frameRate: 8, repeat: -1 })
+        this.anims.create({ key: "attack1", frames: this.anims.generateFrameNumbers('playerAttack1', {}), frameRate: 8, repeat: -1 })
+        this.anims.create({ key: "attack2", frames: this.anims.generateFrameNumbers('playerAttack2', {}), frameRate: 8, repeat: -1 })
+        this.anims.create({ key: "attack3", frames: this.anims.generateFrameNumbers('playerAttack3', {}), frameRate: 8, repeat: -1 })
+        this.anims.create({ key: "dead", frames: this.anims.generateFrameNumbers('playerDead', {}), frameRate: 8, repeat: -1 })
+        this.anims.create({ key: "hurt", frames: this.anims.generateFrameNumbers('playerHurt', {}), frameRate: 8, repeat: -1 })
+        //player
+        const player = new Player(
+            this,
+            center.x + 100, //x좌표
+            center.y, //y좌표
+            'playerIdle') //이미지 이름
+        player.play(keys[1])
+
+        let c = 0;
+        this.input.on('pointerdown', function () {
+            c++;
+            if (c === keys.length) {
+                c = 0;
+            }
+            player.play(keys[c]);
+        })
+    }
+
+    update() {
     }
 }

@@ -4,6 +4,6 @@ import Loading from './scenes/Loading';
 import Stage from './scenes/Stage';
 new Phaser.Game(
   Object.assign(config, {
-    scene: [Loading, Stage]
+    scene: [/**Loading,*/ Stage]
   })
 );
