@@ -2,6 +2,9 @@ import { defineConfig } from 'vite';
 import replace from '@rollup/plugin-replace';
 
 export default defineConfig({
+  server:{
+    port:3001
+  },
   build: {
     rollupOptions: {
       plugins: [
@@ -15,6 +18,14 @@ export default defineConfig({
           'typeof FEATURE_SOUND': "'true'"
         })
       ]
+    },
+    // build시 모든 console.log 를 제거
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true
+      }
     }
   }
 });
