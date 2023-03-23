@@ -15,6 +15,8 @@ export default class Stage extends Phaser.Scene {
         this.load.spritesheet("playerAttack3", "assets/character/Samurai/Attack_3.png", { frameWidth: 128, frameHeight: 128 })//사진자르기
         this.load.spritesheet("playerDead", "assets/character/Samurai/Dead.png", { frameWidth: 128, frameHeight: 128 })//사진자르기
         this.load.spritesheet("playerHurt", "assets/character/Samurai/Hurt.png", { frameWidth: 128, frameHeight: 128 })//사진자르기
+
+        this.load.audio("footstep", "assets/audio/footsteps.wav")
     }
     create() {
         const { x, y, width, height } = this.cameras.main;//main camera의 좌표,크기정보
@@ -26,33 +28,47 @@ export default class Stage extends Phaser.Scene {
         //background 설정
         const background = this.add.tileSprite(x, y, 1800, 1200, "background").setOrigin(0).setScale(width / 1800, height / 1200);
 
-        const keys = ['idle', 'walk', 'run', 'attack1', 'attack2', 'attack3', 'dead', 'hurt'];
-        this.anims.create({ key: "idle", frames: this.anims.generateFrameNumbers('playerIdle', { frames: [0, 1, 2, 3] }), frameRate: 6, repeat: -1 })
-        this.anims.create({ key: "walk", frames: this.anims.generateFrameNumbers('playerWalk', {}), frameRate: 8, repeat: -1 })
-        this.anims.create({ key: "run", frames: this.anims.generateFrameNumbers('playerRun', {}), frameRate: 8, repeat: -1 })
-        this.anims.create({ key: "attack1", frames: this.anims.generateFrameNumbers('playerAttack1', {}), frameRate: 8, repeat: -1 })
-        this.anims.create({ key: "attack2", frames: this.anims.generateFrameNumbers('playerAttack2', {}), frameRate: 8, repeat: -1 })
-        this.anims.create({ key: "attack3", frames: this.anims.generateFrameNumbers('playerAttack3', {}), frameRate: 8, repeat: -1 })
-        this.anims.create({ key: "dead", frames: this.anims.generateFrameNumbers('playerDead', {}), frameRate: 8, repeat: -1 })
-        this.anims.create({ key: "hurt", frames: this.anims.generateFrameNumbers('playerHurt', {}), frameRate: 8, repeat: -1 })
+
         //player
+
         const player = new Player(
             this,
-            center.x + 100, //x좌표
+            center.x, //x좌표
             center.y, //y좌표
             'playerIdle') //이미지 이름
-        player.play(keys[1])
-
-        let c = 0;
-        this.input.on('pointerdown', function () {
-            c++;
-            if (c === keys.length) {
-                c = 0;
+        
+        this.playerController = {
+            matterSprite: this.matter.add.sprite(0, 0, 'player', 4),
+            blocked: {
+                left: false,
+                right: false,
+                bottom: false
+            },
+            numTouching: {
+                left: 0,
+                right: 0,
+                bottom: 0
+            },
+            sensors: {
+                bottom: null,
+                left: null,
+                right: null
+            },
+            time: {
+                leftDown: 0,
+                rightDown: 0
+            },
+            lastJumpedAt: 0,
+            speed: {
+                run: 7,
+                jump: 10
             }
-            player.play(keys[c]);
-        })
+        };
+
+
     }
 
     update() {
+        
     }
 }
