@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import Player from './Player';
-
+import Config from '../config'
 export default class PlayingScene extends Phaser.Scene {
     private cursors!: Phaser.Types.Input.Keyboard.CursorKeys
     private soundGroup: { [key: string]: Phaser.Sound.BaseSound } | null = null
@@ -37,15 +37,21 @@ export default class PlayingScene extends Phaser.Scene {
         //player sprite object
         this.m_player = new Player(this, center.x, center.y)
 
-
+        // 메인 카메라 이동
+        this.cameras.main.startFollow(this.m_player)
+        this.cameras.main.setLerp(1, 0);
     }
 
 
     update(time: number, delta: number) {
         this.handlePlayerMove()
+        this.m_background.setX(this.m_player.x - Config.width) // 플레이어가 중앙이되는 배경위치설정
+        this.m_background.tilePositionX = this.m_player.x - Config.height // 타일의 시작지점이 플레이어의 위치에따라변경
+        // console.log(this.m_player.x, this.m_player.y)
     }
 
     handlePlayerMove() {
+        // cursorkey 와 플레이어 이동관련 사항을 여기 scene에 적는것이 좋을지.. 플레이어 객체 안에 구현하는 것이 좋을 지.. 
         let isMove = false;
         if (this.cursors.left.isDown) {
             isMove = true;

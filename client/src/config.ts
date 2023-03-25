@@ -1,6 +1,9 @@
 import Phaser from 'phaser';
-
-const config: Phaser.Types.Core.GameConfig = {
+interface GameConfig extends Phaser.Types.Core.GameConfig {
+  width: number
+  height: number
+}
+const config: GameConfig = {
   type: Phaser.AUTO,//WebGL or Canvas
   width: 900,
   height: 600,
