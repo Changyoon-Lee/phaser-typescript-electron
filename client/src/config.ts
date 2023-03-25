@@ -1,12 +1,14 @@
 import Phaser from 'phaser';
 
-const config:Phaser.Types.Core.GameConfig = {
+const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,//WebGL or Canvas
+  width: 900,
+  height: 600,
   physics: {//물리엔진
-      default: 'arcade',
-      arcade:{
-        debug:true
-      }, // 디버깅 사용
+    default: 'arcade',
+    arcade: {
+      debug: true
+    }, // 디버깅 사용
   },
   scale: {
     mode: Phaser.Scale.FIT, //자동맞춤
