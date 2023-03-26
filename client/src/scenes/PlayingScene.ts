@@ -1,11 +1,15 @@
 import Phaser from 'phaser';
 import Player from './Player';
 import Config from '../config'
+import Enemy from './enemy'
+import Arrow from './arrow';
 export default class PlayingScene extends Phaser.Scene {
-    private cursors!: Phaser.Types.Input.Keyboard.CursorKeys
-    private soundGroup: { [key: string]: Phaser.Sound.BaseSound } | null = null
-    private m_background!: Phaser.GameObjects.TileSprite
-    private m_player!: Player
+    public cursors!: Phaser.Types.Input.Keyboard.CursorKeys
+    public soundGroup!: { [key: string]: Phaser.Sound.BaseSound }
+    public m_background!: Phaser.GameObjects.TileSprite
+    public m_player!: Player
+    public m_attacks!: Phaser.GameObjects.Group
+    public m_enemies!: Phaser.GameObjects.Group
     constructor() {
         super("playGame");
         console.log("playScene loaded")
@@ -39,7 +43,20 @@ export default class PlayingScene extends Phaser.Scene {
 
         // 메인 카메라 이동
         this.cameras.main.startFollow(this.m_player)
-        this.cameras.main.setLerp(1, 0);
+        this.cameras.main.setLerp(1, 0); //y축으로는 안움직이게 
+
+        //object group
+        this.m_attacks = this.add.group(); //그룹으로 관리
+        this.m_enemies = this.physics.add.group(); //그룹으로 관리
+
+        // enemy
+        this.m_enemies = this.physics.add.group();
+        this.m_enemies.add(new Enemy(this, Config.width / 2 - 200, Config.height / 2,));
+
+        // collisions
+        // this.physics.add.overlap(this.m_attacks, this.m_enemies, (attack, enemy) => {
+        //     enemy.hit(attack, 10);
+        // }, null, this);
     }
 
 
@@ -68,10 +85,14 @@ export default class PlayingScene extends Phaser.Scene {
             this.m_player.moveDown();
         }
         this.m_player.playerState.onMove = isMove;
-        if (!isMove) {
-            this.m_player.play('idle', true);
+        if (this.m_player.playerState.onAttack === true) {
+            this.m_player.play('shot', true)
         } else {
-            this.m_player.play('walk', true)
+            if (!isMove) {
+                this.m_player.play('idle', true);
+            } else {
+                this.m_player.play('walk', true)
+            }
         }
     }
 }

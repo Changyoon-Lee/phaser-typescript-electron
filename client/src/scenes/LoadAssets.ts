@@ -22,6 +22,15 @@ export default class Loading extends Phaser.Scene {
         this.load.spritesheet("playerDead", "/assets/character/Samurai_Archer/Dead.png", { frameWidth: 128, frameHeight: 128 })
         this.load.spritesheet("playerShot", "/assets/character/Samurai_Archer/Shot.png", { frameWidth: 128, frameHeight: 128 })
 
+        //enemy
+        this.load.spritesheet("enemyWalk", "/assets/enemy/Skeleton_Warrior/Walk.png", { frameWidth: 128, frameHeight: 128 })
+        this.load.spritesheet("enemyHurt", "/assets/enemy/Skeleton_Warrior/Hurt.png", { frameWidth: 128, frameHeight: 128 })
+        this.load.spritesheet("enemyDead", "/assets/enemy/Skeleton_Warrior/Dead.png", { frameWidth: 128, frameHeight: 128 })
+        this.load.spritesheet("enemyAttack", "/assets/enemy/Skeleton_Warrior/Attack_1.png", { frameWidth: 128, frameHeight: 128 })
+
+        //공격관련
+        this.load.image("arrow", "/assets/character/Samurai_Archer/Arrow.png")
+
         //audio
         this.load.audio("audio_tap", "/assets/audio/ball-tap.wav")
         this.load.audio("audio_bonus", "/assets/audio/bonus-earned-in-video-game.wav")
@@ -37,10 +46,15 @@ export default class Loading extends Phaser.Scene {
         //animation 설정
         this.anims.create({ key: "idle", frames: this.anims.generateFrameNumbers('playerIdle', {}), frameRate: 20, repeat: -1 })
         this.anims.create({ key: "walk", frames: this.anims.generateFrameNumbers('playerWalk', {}), frameRate: 8, repeat: -1 })
-        this.anims.create({ key: "shot", frames: this.anims.generateFrameNumbers('playerShot', {}), frameRate: 8 })
+        this.anims.create({ key: "shot", frames: this.anims.generateFrameNumbers('playerShot', {}), frameRate: 14 })
         this.anims.create({ key: "dead", frames: this.anims.generateFrameNumbers('playerDead', {}), frameRate: 8 })
         this.anims.create({ key: "hurt", frames: this.anims.generateFrameNumbers('playerHurt', {}), frameRate: 8 })
         this.anims.create({ key: "explosion", frames: this.anims.generateFrameNumbers('explosion', {}), frameRate: 8 })
+
+        this.anims.create({ key: "enemyWalk", frames: this.anims.generateFrameNumbers('enemyWalk', {}), frameRate: 14, repeat: -1 })
+        this.anims.create({ key: "enemyHurt", frames: this.anims.generateFrameNumbers('enemyHurt', {}), frameRate: 8 })
+        this.anims.create({ key: "enemyDead", frames: this.anims.generateFrameNumbers('enemyDead', {}), frameRate: 8 })
+        this.anims.create({ key: "enemyAttack", frames: this.anims.generateFrameNumbers('enemyAttack', {}), frameRate: 8 })
 
         //
         const { x, y, width, height } = this.cameras.main;//main camera의 좌표,크기정보
