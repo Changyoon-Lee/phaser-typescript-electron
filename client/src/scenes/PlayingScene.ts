@@ -1,8 +1,12 @@
 import Phaser from 'phaser';
 import Player from './Player';
 import Config from '../config'
-import Enemy from './enemy'
-import Arrow from './arrow';
+import './Enemy.ts'
+import './Arrow.ts';
+import Enemy from './enemy';
+
+
+
 export default class PlayingScene extends Phaser.Scene {
     public cursors!: Phaser.Types.Input.Keyboard.CursorKeys
     public soundGroup!: { [key: string]: Phaser.Sound.BaseSound }
@@ -51,12 +55,12 @@ export default class PlayingScene extends Phaser.Scene {
 
         // enemy
         this.m_enemies = this.physics.add.group();
-        this.m_enemies.add(new Enemy(this, Config.width / 2 - 200, Config.height / 2,));
+        this.m_enemies.add(this.add.enemy(Config.width / 2 - 200, Config.height / 2,));
 
         // collisions
-        // this.physics.add.overlap(this.m_attacks, this.m_enemies, (attack, enemy) => {
-        //     enemy.hit(attack, 10);
-        // }, null, this);
+        this.physics.add.overlap(this.m_attacks, this.m_enemies, (attack, enemy): void => {
+            (enemy as Enemy).hit(attack, 10);
+        }, undefined, this);
     }
 
 

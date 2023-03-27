@@ -4,7 +4,7 @@ import PlayingScene from './PlayingScene';
 export default class Enemy extends Phaser.Physics.Arcade.Sprite {
     public speed!: number
     public hp!: number
-    constructor(scene: PlayingScene, x: number, y: number) {
+    constructor(scene: Phaser.Scene, x: number, y: number) {
 
         super(scene, 128, 128, "enemy");
         this.setPosition(x, y)
@@ -12,7 +12,7 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.hp = 100
 
         this.play("enemyWalk", true)
-        scene.add.existing(this);
+        // scene.add.existing(this);
         scene.physics.world.enableBody(this);
 
         this.scale = 1;
@@ -26,10 +26,19 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
 
         // setTimeout(() => this.destroy(), Arrow.DURATION);
     }
-    // hit(attack:, damage) {
-    //     attack.destroy();
-    //     this.hp -= damage
-    // }
+    hit(attack: any, damage: any) {
+        attack.destroy();
+        this.hp -= damage
+    }
     update() {
     }
 }
+
+Phaser.GameObjects.GameObjectFactory.register('enemy', function (this: Phaser.GameObjects.GameObjectFactory, x: number, y: number) {
+    const enemy = new Enemy(this.scene, x, y)
+
+    this.displayList.add(enemy)
+    // this.updateList.add(enemy) // preupdate 할게 있으면 추가
+
+    return enemy
+})

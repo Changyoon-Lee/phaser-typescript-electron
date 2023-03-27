@@ -1,7 +1,6 @@
-import Arrow from './arrow'
+import './Arrow.ts';
 import PlayingScene from './PlayingScene'
 export default class Player extends Phaser.Physics.Arcade.Sprite {
-
     public playerState
     public playingScene!: PlayingScene
     constructor(scene: PlayingScene, x: number, y: number) {
@@ -27,7 +26,6 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         scene.time.addEvent({
             delay: 1000,
             callback: () => {
-                console.log("shoot arrow")
                 this.shootArrow()
             },
             loop: true
@@ -55,7 +53,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     shootArrow() {
         this.playerState.onAttack = true
         setTimeout(() => {
-            new Arrow(this.playingScene, this)
+            this.playingScene.add.arrow(this)
         })
 
         // setTimeout(() => { this.playerState.onAttack = false }, 1000)
