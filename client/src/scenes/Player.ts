@@ -1,10 +1,9 @@
 import './Arrow.ts';
-import PlayingScene from './PlayingScene'
+
 export default class Player extends Phaser.Physics.Arcade.Sprite {
     public playerState
-    public playingScene!: PlayingScene
-    constructor(scene: PlayingScene, x: number, y: number) {
-        super(scene, 128, 128, "playerIdle")
+    constructor(scene: Phaser.Scene, x: number, y: number) {
+        super(scene, x, y, "playerIdle")
 
 
         // 초기 세팅
@@ -16,9 +15,9 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
 
         }
 
-        this.setPosition(x, y)
+        // this.setPosition(x, y)
         // scene에 추가
-        this.playingScene = scene
+        this.scene = scene
         scene.add.existing(this);
         scene.physics.add.existing(this);
 
@@ -53,7 +52,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     shootArrow() {
         this.playerState.onAttack = true
         setTimeout(() => {
-            this.playingScene.add.arrow(this)
+            this.scene.add.arrow(this)
         })
 
         // setTimeout(() => { this.playerState.onAttack = false }, 1000)

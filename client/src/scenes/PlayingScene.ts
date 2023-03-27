@@ -3,7 +3,8 @@ import Player from './Player';
 import Config from '../config'
 import './Enemy.ts'
 import './Arrow.ts';
-import Enemy from './enemy';
+import { getRandomPosition } from '../utils/math';
+import Enemy from './Enemy';
 
 
 
@@ -22,8 +23,8 @@ export default class PlayingScene extends Phaser.Scene {
     create() {
         const { x, y, width, height } = this.cameras.main;//main camera의 좌표,크기정보
         const center = {
-            x: x + width / 2,
-            y: y + height / 2
+            x: Config.width / 2,
+            y: Config.height / 2
         }
         // sound
         this.sound.pauseOnBlur = false; // 게임화면 벗어났을때 소리 끄기
@@ -39,13 +40,14 @@ export default class PlayingScene extends Phaser.Scene {
         this.cursors = this.input.keyboard.createCursorKeys();
 
         // background
-        this.m_background = this.add.tileSprite(x, y, 1800, 1200, "background").setOrigin(0).setTileScale(0.5);
+        this.m_background = this.add.tileSprite(0, 0, 1800, 1200, "background").setOrigin(0, 0).setTileScale(0.5);
         // this.m_background = this.add.image(x, y, "background").setOrigin(0).setScale(width / 1800, height / 1200);
 
         //player sprite object
         this.m_player = new Player(this, center.x, center.y)
 
         // 메인 카메라 이동
+        const offsetX = 64;
         this.cameras.main.startFollow(this.m_player)
         this.cameras.main.setLerp(1, 0); //y축으로는 안움직이게 
 
@@ -54,9 +56,8 @@ export default class PlayingScene extends Phaser.Scene {
         this.m_enemies = this.physics.add.group(); //그룹으로 관리
 
         // enemy
-        this.m_enemies = this.physics.add.group();
-        this.m_enemies.add(this.add.enemy(Config.width / 2 - 200, Config.height / 2,));
-
+        // this.m_enemies.add(this.add.enemy(Config.width / 2 - 200, Config.height / 2,));
+        this.addEnemy()
         // collisions
         this.physics.add.overlap(this.m_attacks, this.m_enemies, (attack, enemy): void => {
             (enemy as Enemy).hit(attack, 10);
@@ -67,7 +68,7 @@ export default class PlayingScene extends Phaser.Scene {
     update(time: number, delta: number) {
         this.handlePlayerMove()
         this.m_background.setX(this.m_player.x - Config.width) // 플레이어가 중앙이되는 배경위치설정
-        this.m_background.tilePositionX = this.m_player.x - Config.height // 타일의 시작지점이 플레이어의 위치에따라변경
+        this.m_background.tilePositionX = this.m_player.x * 2 // 타일의 시작지점이 플레이어의 위치에따라변경
         // console.log(this.m_player.x, this.m_player.y)
     }
 
@@ -98,5 +99,16 @@ export default class PlayingScene extends Phaser.Scene {
                 this.m_player.play('walk', true)
             }
         }
+    }
+
+    addEnemy() {
+        this.time.addEvent({
+            delay: 3000,
+            callback: () => {
+                let [x, y] = getRandomPosition(this.m_player.x, this.m_player.y);
+                this.m_enemies.add(this.add.enemy(x, y));
+            },
+            loop: true,
+        });
     }
 }

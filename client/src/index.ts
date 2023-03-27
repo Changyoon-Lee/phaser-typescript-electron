@@ -10,6 +10,7 @@ declare global {
   namespace Phaser {
     interface Scene {
       m_attacks: Phaser.GameObjects.Group;
+      m_player: Player;
       soundGroup: { [key: string]: Phaser.Sound.BaseSound }
     }
   }
