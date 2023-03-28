@@ -7,3 +7,7 @@ export function getRandomPosition(x: number, y: number) {
     const _y = y + (_r * Math.sin(randRad));
     return [_x, _y];
 }
+
+export function clamp(value: number, lo: number, hi: number): number {
+    return Math.min(Math.max(value, lo), hi);
+}

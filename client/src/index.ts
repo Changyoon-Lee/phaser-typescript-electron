@@ -1,5 +1,8 @@
 import Phaser from 'phaser';
 import config from './config';
+import Arrow from './scenes/Arrow';
+import Enemy from './scenes/Enemy';
+import HpBar from './scenes/HpBar';
 import LoadAssets from './scenes/LoadAssets';
 import Player from './scenes/Player';
 import PlayingScene from './scenes/PlayingScene';
@@ -16,13 +19,10 @@ declare global {
   }
   namespace Phaser.GameObjects {
     interface GameObjectFactory {
-      arrow(player: Player): IArrow
-      enemy(x: number, y: number): IEnemy
+      arrow(player: Player): Arrow
+      enemy(x: number, y: number): Enemy
+      hpBar(player: Player, maxHp: number): HpBar
     }
-  }
-  interface IArrow extends Phaser.Physics.Arcade.Image {
-  }
-  interface IEnemy extends Phaser.Physics.Arcade.Sprite {
   }
 }
 new Phaser.Game(

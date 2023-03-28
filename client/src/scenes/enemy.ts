@@ -13,7 +13,7 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.setBodySize(16, 64, true)
         this.setOffset(128 / 2 - 16 / 2, 128 - 64)
         this.speed = 100
-        this.hp = 30
+        this.hp = 10
         this.scale = 1;
         this.play("enemyWalk", true)
 
@@ -30,12 +30,13 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
             loop: true,
         }));
     }
-    hit(attack: any, damage: any) {
+    hit(attack: any, damage: number) {
         attack.destroy();
         this.hp -= damage
         this.scene.soundGroup.m_hurtSound.play();
 
         if (this.hp <= 0) {
+            this.disableBody();
             this.play("enemyDead")
             this.scene.time.removeEvent(this.m_events)
             this.setVelocity(0, 0)
