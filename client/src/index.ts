@@ -1,11 +1,12 @@
 import Phaser from 'phaser';
 import config from './config';
-import Arrow from './scenes/Arrow';
-import Enemy from './scenes/Enemy';
-import HpBar from './scenes/HpBar';
+import Arrow from './objects/Arrow';
+import Enemy from './objects/Enemy';
+import HpBar from './objects/components/HpBar';
 import LoadAssets from './scenes/LoadAssets';
-import Player from './scenes/Player';
+import Player from './objects/Player';
 import PlayingScene from './scenes/PlayingScene';
+import MainScene from './scenes/MainScene';
 // import Stage from './scenes/Stage';
 
 
@@ -27,6 +28,6 @@ declare global {
 }
 new Phaser.Game(
   Object.assign(config, {
-    scene: [LoadAssets, PlayingScene]
+    scene: [LoadAssets, PlayingScene, MainScene]
   })
 );

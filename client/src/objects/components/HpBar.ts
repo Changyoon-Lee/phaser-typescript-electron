@@ -1,6 +1,6 @@
 // import { clamp } from "../utils/math";
-import { clamp } from "../utils/math";
-import Player from "./Player";
+import { clamp } from "../../utils/math";
+import Player from "../Player";
 
 export default class HpBar extends Phaser.GameObjects.Graphics {
     public m_x: number

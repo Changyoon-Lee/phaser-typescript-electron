@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import Player from './Player';
-import PlayingScene from './PlayingScene';
+import PlayingScene from '../scenes/PlayingScene';
 export default class Arrow extends Phaser.Physics.Arcade.Image {
     static SPEED = 200;
     static DURATION = 2000;

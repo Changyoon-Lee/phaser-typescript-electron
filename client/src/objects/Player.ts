@@ -1,6 +1,6 @@
-import './Arrow.ts';
-import './HpBar.ts';
-import HpBar from './HpBar';
+import '../objects/Arrow.ts';
+import '../objects/components/HpBar.ts';
+import HpBar from './components/HpBar';
 
 export default class Player extends Phaser.Physics.Arcade.Sprite {
     public playerState

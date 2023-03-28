@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import Player from './Player';
-import PlayingScene from './PlayingScene';
+import PlayingScene from '../scenes/PlayingScene';
 export default class Enemy extends Phaser.Physics.Arcade.Sprite {
     public speed!: number
     public hp!: number

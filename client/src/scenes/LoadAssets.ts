@@ -30,7 +30,8 @@ export default class Loading extends Phaser.Scene {
 
         //공격관련
         this.load.image("arrow", "/assets/character/Samurai_Archer/Arrow.png")
-
+        //font
+        this.load.bitmapFont("pixelFont", "/assets/fonts/font.png", "/assets/fonts/font.xml")
         //audio
         this.load.audio("audio_tap", "/assets/audio/ball-tap.wav")
         this.load.audio("audio_bonus", "/assets/audio/bonus-earned-in-video-game.wav")
@@ -41,7 +42,7 @@ export default class Loading extends Phaser.Scene {
         this.load.audio("audio_losing", "/assets/audio/player-losing.wav")
     }
     create() {
-        this.scene.start("playGame")
+        this.scene.start("mainScene")
 
         //animation 설정
         this.anims.create({ key: "idle", frames: this.anims.generateFrameNumbers('playerIdle', {}), frameRate: 20, repeat: -1 })

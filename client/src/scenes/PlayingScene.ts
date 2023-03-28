@@ -1,10 +1,10 @@
 import Phaser from 'phaser';
-import Player from './Player';
+import Player from '../objects/Player';
 import Config from '../config'
-import './Enemy.ts'
-import './Arrow.ts';
+import '../objects/Enemy.ts'
+import '../objects/Arrow.ts';
 import { getRandomPosition } from '../utils/math';
-import Enemy from './Enemy';
+import Enemy from '../objects/Enemy';
 
 
 
@@ -47,7 +47,6 @@ export default class PlayingScene extends Phaser.Scene {
         this.m_player = new Player(this, center.x, center.y)
 
         // 메인 카메라 이동
-        const offsetX = 64;
         this.cameras.main.startFollow(this.m_player)
         this.cameras.main.setLerp(1, 0); //y축으로는 안움직이게 
 
