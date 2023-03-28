@@ -62,6 +62,8 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         this.m_hpBar.decrease(damage)
         if (this.m_hpBar.m_currentHp <= 0) {
             // 게임오버
+            this.scene.soundGroup.m_deadSound.play();
+            this.scene.scene.start("gameoverScene", {})
         }
         this.disableBody(false, false)
         this.alpha = 0.5

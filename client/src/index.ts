@@ -7,6 +7,7 @@ import LoadAssets from './scenes/LoadAssets';
 import Player from './objects/Player';
 import PlayingScene from './scenes/PlayingScene';
 import MainScene from './scenes/MainScene';
+import GameoverScene from './scenes/GameoverScene';
 // import Stage from './scenes/Stage';
 
 
@@ -28,6 +29,6 @@ declare global {
 }
 new Phaser.Game(
   Object.assign(config, {
-    scene: [LoadAssets, PlayingScene, MainScene]
+    scene: [LoadAssets, PlayingScene, MainScene, GameoverScene]
   })
 );
