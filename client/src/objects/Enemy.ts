@@ -32,6 +32,7 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
     }
     hit(attack: any, damage: number) {
         attack.destroy();
+        
         this.hp -= damage
         this.scene.soundGroup.m_hurtSound.play();
         this.damageText(this.x, this.y, damage)
