@@ -3,8 +3,10 @@ import Player from '../objects/Player';
 import Config from '../config'
 import '../objects/Enemy.ts'
 import '../objects/Arrow.ts';
+import '../objects/Item.ts';
 import { getRandomPosition } from '../utils/math';
 import Enemy from '../objects/Enemy';
+import Item from 'src/objects/Item';
 
 
 
@@ -15,6 +17,7 @@ export default class PlayingScene extends Phaser.Scene {
     public m_player!: Player
     public m_attacks!: Phaser.GameObjects.Group
     public m_enemies!: Phaser.GameObjects.Group
+    public m_items!: Phaser.GameObjects.Group
     constructor() {
         super("playGame");
         console.log("playScene loaded")
@@ -40,7 +43,7 @@ export default class PlayingScene extends Phaser.Scene {
         this.cursors = this.input.keyboard.createCursorKeys();
 
         // background
-        this.m_background = this.add.tileSprite(0, 0, 1800, 1200, "background").setOrigin(0, 0).setTileScale(0.5);
+        this.m_background = this.add.tileSprite(0, 0, 1800, 1200, "background").setOrigin(0).setTileScale(0.5);
         // this.m_background = this.add.image(x, y, "background").setOrigin(0).setScale(width / 1800, height / 1200);
 
         //player sprite object
@@ -53,16 +56,20 @@ export default class PlayingScene extends Phaser.Scene {
         //object group
         this.m_attacks = this.add.group(); //그룹으로 관리
         this.m_enemies = this.physics.add.group(); //그룹으로 관리
+        this.m_items = this.add.group(); //그룹으로 관리
 
         // enemy
         // this.m_enemies.add(this.add.enemy(Config.width / 2 - 200, Config.height / 2,));
         this.addEnemy()
         // collisions
         this.physics.add.overlap(this.m_attacks, this.m_enemies, (attack, enemy): void => {
-            (enemy as Enemy).hit(attack, 10)
+            (enemy as Enemy).hit(attack, this.m_player.playerState.power)
         }, undefined, this);
         this.physics.add.overlap(this.m_player, this.m_enemies, (player, enemy): void => {
             (player as Player).hitByEnemy(10);
+        }, undefined, this);
+        this.physics.add.overlap(this.m_player, this.m_items, (player, item): void => {
+            (item as Item).collected(player as Player);
         }, undefined, this);
     }
 
@@ -113,4 +120,10 @@ export default class PlayingScene extends Phaser.Scene {
             loop: true,
         });
     }
+    getItem(item:Item) {
+        console.log(item.name);
+    }
+    upgradeEnemy(){}
+    upgradeArrow(){}
+    upgradePet(){}
 }

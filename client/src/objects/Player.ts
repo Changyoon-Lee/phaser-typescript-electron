@@ -25,6 +25,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
             onAttack: false,
             onHurt: false,
             speed: 4,
+            power: 10,
         }
         this.alpha = 1// 공격당했을때 투명해지도록
         this.m_hpBar = this.scene.add.hpBar(this, 100);

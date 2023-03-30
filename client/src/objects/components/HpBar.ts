@@ -8,8 +8,8 @@ export default class HpBar extends Phaser.GameObjects.Graphics {
     public m_maxHp: number
     public m_currentHp: number
 
-    static WIDTH = 80;
-    static HEIGHT = 12;
+    static WIDTH = 160;
+    static HEIGHT = 24;
     static BORDER = 2;
 
     constructor(scene: Phaser.Scene, player: Player, maxHp: number) {

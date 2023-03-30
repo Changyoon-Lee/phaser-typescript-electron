@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import Player from './Player';
+import './Item.ts';
 import PlayingScene from '../scenes/PlayingScene';
 export default class Enemy extends Phaser.Physics.Arcade.Sprite {
     public speed!: number
@@ -34,13 +34,16 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
         attack.destroy();
         this.hp -= damage
         this.scene.soundGroup.m_hurtSound.play();
-
+        
         if (this.hp <= 0) {
             this.disableBody();
             this.play("enemyDead")
             this.scene.time.removeEvent(this.m_events)
             this.setVelocity(0, 0)
-            setTimeout(() => this.destroy(), 1000)
+            setTimeout(() => {
+                this.scene.add.item(this)
+                this.destroy()
+            }, 1000)
 
         }
     }
