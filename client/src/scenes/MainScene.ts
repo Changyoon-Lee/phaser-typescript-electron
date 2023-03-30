@@ -16,7 +16,7 @@ export default class MainScene extends Phaser.Scene {
     bg.fillStyle(0x005500);
     bg.fillRect(0, 0, Config.width, Config.height)
 
-    this.add.bitmapText(Config.width / 2, 180, 'pixelFont', 'unlucky archer', 70).setOrigin()
+    this.add.bitmapText(Config.width / 2, 180, 'pixelFont', 'special force archer', 70).setOrigin()
     this.tweens.add({
       targets: logo,
       y: 350,

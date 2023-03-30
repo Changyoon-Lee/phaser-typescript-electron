@@ -7,33 +7,37 @@ import '../objects/Item.ts';
 import { getRandomPosition } from '../utils/math';
 import Enemy from '../objects/Enemy';
 import Item from '../objects/Item';
+import Arrow from 'src/objects/Arrow';
 
 
 
 export default class PlayingScene extends Phaser.Scene {
     public cursors!: Phaser.Types.Input.Keyboard.CursorKeys
     public soundGroup!: { [key: string]: Phaser.Sound.BaseSound }
+    public m_UIs!: Phaser.GameObjects.Group
     public m_background!: Phaser.GameObjects.TileSprite
     public m_player!: Player
     public m_attacks!: Phaser.GameObjects.Group
     public m_enemies!: Phaser.GameObjects.Group
     public m_items!: Phaser.GameObjects.Group
-    public m_itemCount!: { [key: string]:number};
+    public m_itemCount!: { [key: string]: number };
     public timer!: Phaser.GameObjects.BitmapText
+    public enemyLevel!: number;
+    public arrowLevel!: number;
+
     constructor() {
         super("playGame");
-        console.log("playScene loaded")
     }
 
     create() {
         const { x, y, width, height } = this.cameras.main;//main camera의 좌표,크기정보
-        console.log("camera", width, height)
+
         const center = {
             x: Config.width / 2,
             y: Config.height / 2
         }
         //timer
-        this.timer = this.add.bitmapText(300,32, "pixelFont","00", 40).setOrigin(0.5).setDepth(999)
+        this.timer = this.add.bitmapText(300, 32, "pixelFont", "00", 40).setOrigin(0.5).setDepth(999)
         this.timer.setScrollFactor(0);
         // sound
         this.sound.pauseOnBlur = false; // 게임화면 벗어났을때 소리 끄기
@@ -47,18 +51,19 @@ export default class PlayingScene extends Phaser.Scene {
             m_deadSound: this.sound.add("audio_losing")
         }
         this.cursors = this.input.keyboard.createCursorKeys();
-        
+
         // background
-        this.m_background = this.add.tileSprite(0, 0, 900, 600, "background").setOrigin(0,0).setTileScale(0.5);
+        this.m_background = this.add.tileSprite(0, 0, 900, 600, "background").setOrigin(0, 0).setTileScale(0.5);
         // this.m_background = this.add.image(x, y, "background").setOrigin(0).setScale(width / 1800, height / 1200);
-        this.physics.world.setBounds(0, 200, 900, 290,false,false);
+        this.physics.world.setBounds(0, 200, 900, 290, false, false);
         //player sprite object
         this.m_player = new Player(this, center.x, center.y)
 
         //itemCount set
-        this.m_itemCount={}
+        this.m_itemCount = {}
         this.resetItemCount()
-        console.log(this.m_itemCount)
+        this.m_UIs = this.add.group();
+        this.drawItemUI()
         // 메인 카메라 이동
         this.cameras.main.startFollow(this.m_player)
         this.cameras.main.setLerp(1, 0); //y축으로는 안움직이게 
@@ -69,11 +74,12 @@ export default class PlayingScene extends Phaser.Scene {
         this.m_items = this.add.group(); //그룹으로 관리
 
         // enemy
-        // this.m_enemies.add(this.add.enemy(Config.width / 2 - 200, Config.height / 2,));
+        this.enemyLevel = 1;
+        this.arrowLevel = 1;
         this.addEnemy()
         // collisions
         this.physics.add.overlap(this.m_attacks, this.m_enemies, (attack, enemy): void => {
-            (enemy as Enemy).hit(attack, this.m_player.playerState.power)
+            (enemy as Enemy).hit((attack as Arrow), this.m_player.playerState.power)
         }, undefined, this);
         this.physics.add.overlap(this.m_player, this.m_enemies, (player, enemy): void => {
             (player as Player).hitByEnemy(10);
@@ -85,12 +91,12 @@ export default class PlayingScene extends Phaser.Scene {
 
 
     update(time: number, delta: number) {
-        
-        this.timer.setText('Timer: ' + Math.round(time/1000).toString())
-        console.log(this.timer.text)
+        // 게임 새로 시작할때 타임 0으로 안돼는 버그 있음
+        this.timer.setText('Timer: ' + Math.round(time / 1000).toString())
+
         this.handlePlayerMove()
-        this.m_background.setX(this.m_player.x - Config.width/2) // 플레이어가 중앙이되는 배경위치설정
-        this.m_background.tilePositionX = this.m_player.x*2 // 타일의 시작지점이 플레이어의 위치에따라변경
+        this.m_background.setX(this.m_player.x - Config.width / 2) // 플레이어가 중앙이되는 배경위치설정
+        this.m_background.tilePositionX = this.m_player.x * 2 // 타일의 시작지점이 플레이어의 위치에따라변경
         // console.log(this.m_player.x, this.m_player.y)
     }
 
@@ -125,24 +131,48 @@ export default class PlayingScene extends Phaser.Scene {
 
     addEnemy() {
         this.time.addEvent({
-            delay: 3000,
+            delay: 1000,
             callback: () => {
                 let [x, y] = getRandomPosition(this.m_player.x, this.m_player.y);
-                this.m_enemies.add(this.add.enemy(x, y));
+                this.m_enemies.add(this.add.enemy(x, y, Enemy.enemyStat[this.enemyLevel]));
             },
             loop: true,
         });
     }
-    getItem(item:Item) {
+    getItem(item: Item) {
         console.log(item.name);
     }
     resetItemCount() {
         for (let item of Item.itemList) {
-            this.m_itemCount[item]=0
+            this.m_itemCount[item] = 0
             //.forEach((item)=> {.m_itemCount[item]=0})
+        }
     }
-}
-    upgradeEnemy(){}
-    upgradeArrow(){}
-    upgradePet(){}
+    upgradeEnemy() {
+        if (this.enemyLevel < 10) {
+            this.enemyLevel += 1
+        }
+    }
+    upgradeArrow() {
+        if (this.arrowLevel < 10) {
+            this.arrowLevel += 1
+        }
+    }
+    upgradeDamage() {
+        this.m_player.playerState.power += 0.2
+    }
+    upgradePet() { }
+    drawItemUI() {
+        this.m_UIs.clear(true)
+        let x = 500
+        let y = 15
+        const xDist = 50
+        const yDist = 20
+        for (let item of Item.itemList) {
+            this.m_UIs.add(this.add.image(x, y, item).setOrigin(0.5).setScale(0.5).setScrollFactor(0))
+            this.m_UIs.add(this.add.bitmapText(x + xDist, y, "pixelFont", `x ${this.m_itemCount[item]}`, 20).setOrigin(0.5).setScrollFactor(0));
+            y += yDist
+        }
+        console.log(this.m_itemCount)
+    }
 }

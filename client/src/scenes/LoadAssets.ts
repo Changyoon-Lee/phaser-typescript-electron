@@ -53,7 +53,7 @@ export default class Loading extends Phaser.Scene {
         this.anims.create({ key: "shot", frames: this.anims.generateFrameNumbers('playerShot', {}), frameRate: 14 })
         this.anims.create({ key: "dead", frames: this.anims.generateFrameNumbers('playerDead', {}), frameRate: 8 })
         this.anims.create({ key: "hurt", frames: this.anims.generateFrameNumbers('playerHurt', {}), frameRate: 8 })
-        this.anims.create({ key: "explosion", frames: this.anims.generateFrameNumbers('explosion', {}), frameRate: 8 })
+        this.anims.create({ key: "explosion", frames: this.anims.generateFrameNumbers('explosion', {}), frameRate: 16 })
 
         this.anims.create({ key: "enemyWalk", frames: this.anims.generateFrameNumbers('enemyWalk', {}), frameRate: 14, repeat: -1 })
         this.anims.create({ key: "enemyHurt", frames: this.anims.generateFrameNumbers('enemyHurt', {}), frameRate: 8 })

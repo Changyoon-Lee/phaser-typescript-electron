@@ -1,40 +1,38 @@
 import '../objects/Arrow.ts';
 import '../objects/components/HpBar.ts';
+import Arrow from './Arrow';
 import HpBar from './components/HpBar';
 
 export default class Player extends Phaser.Physics.Arcade.Sprite {
     public playerState
     public m_hpBar!: HpBar
-    public center!: { x: number, y: number }
     constructor(scene: Phaser.Scene, x: number, y: number) {
         super(scene, x, y, "playerIdle")
-        console.log(x,y)
+
         // scene에 추가
         this.scene = scene
         scene.add.existing(this);
         scene.physics.add.existing(this);
-        
-        this.center = {
-            x: x - 64,
-            y: y - 64
-        }
+
+
         this.setCollideWorldBounds(true)
-        this.setBodySize(16, 64)
-        this.setOffset(128 / 2 - 16 / 2, 128 - 64)
+        this.setBodySize(16, 64, true)
+        const offsetY = this.body.height / 2
+        this.body.offset.y = this.body.offset.y + offsetY
         // 초기 세팅
         this.playerState = {
             onMove: false,
             onAttack: false,
             onHurt: false,
             speed: 4,
-            power: 10,
+            power: 1,
         }
         this.alpha = 1// 캐릭터 투명도
         this.m_hpBar = this.scene.add.hpBar(this, 100);
 
         //주기적으로 아래 함수 실행
         scene.time.addEvent({
-            delay: 1000,
+            delay: 400,
             callback: () => {
                 this.shootArrow()
             },
@@ -83,7 +81,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     shootArrow() {
         this.playerState.onAttack = true
         setTimeout(() => {
-            this.scene.add.arrow(this)
+            this.scene.add.arrow(this, Arrow.arrowStatList[this.scene.arrowLevel])
         })
 
         // setTimeout(() => { this.playerState.onAttack = false }, 1000)
