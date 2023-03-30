@@ -8,15 +8,17 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     public center!: { x: number, y: number }
     constructor(scene: Phaser.Scene, x: number, y: number) {
         super(scene, x, y, "playerIdle")
+        console.log(x,y)
         // scene에 추가
         this.scene = scene
         scene.add.existing(this);
         scene.physics.add.existing(this);
-
+        
         this.center = {
-            x: x + 64,
-            y: y + 64
+            x: x - 64,
+            y: y - 64
         }
+        this.setCollideWorldBounds(true)
         this.setBodySize(16, 64)
         this.setOffset(128 / 2 - 16 / 2, 128 - 64)
         // 초기 세팅
@@ -27,9 +29,8 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
             speed: 4,
             power: 10,
         }
-        this.alpha = 1// 공격당했을때 투명해지도록
+        this.alpha = 1// 캐릭터 투명도
         this.m_hpBar = this.scene.add.hpBar(this, 100);
-        // this.setPosition(x, y)
 
         //주기적으로 아래 함수 실행
         scene.time.addEvent({
@@ -61,12 +62,13 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         if (this.alpha < 1) return;
         this.scene.soundGroup.m_hurtSound.play()
         this.m_hpBar.decrease(damage)
+        //death
         if (this.m_hpBar.m_currentHp <= 0) {
             // 게임오버
             this.scene.soundGroup.m_deadSound.play();
-            this.scene.scene.start("gameoverScene", {})
+            this.scene.scene.start("gameoverScene", this.scene.m_itemCount)
         }
-        this.disableBody(false, false)
+        this.playerState.onHurt = true
         this.alpha = 0.5
         // 1초 쿨타임
         this.scene.time.addEvent({
@@ -75,7 +77,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         })
     }
     resetPlayer() {
-        this.enableBody(true, this.x, this.y, true, true)
+        this.playerState.onHurt = false
         this.alpha = 1
     }
     shootArrow() {

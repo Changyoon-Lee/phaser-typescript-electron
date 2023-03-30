@@ -1,17 +1,17 @@
 import Phaser from 'phaser';
 import './Item.ts';
-import PlayingScene from '../scenes/PlayingScene';
 export default class Enemy extends Phaser.Physics.Arcade.Sprite {
     public speed!: number
     public hp!: number
     public m_events!: Phaser.Time.TimerEvent[]
     constructor(scene: Phaser.Scene, x: number, y: number) {
 
-        super(scene, 128, 128, "enemy");
+        super(scene, x, y, "enemy");
         scene.physics.world.enableBody(this);
-        this.setPosition(x, y)
+        // this.setPosition(x, y)
         this.setBodySize(16, 64, true)
         this.setOffset(128 / 2 - 16 / 2, 128 - 64)
+        this.setCollideWorldBounds(true) // 설정한 범위만 움직이도록
         this.speed = 100
         this.hp = 10
         this.scale = 1;
@@ -34,7 +34,10 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
         attack.destroy();
         this.hp -= damage
         this.scene.soundGroup.m_hurtSound.play();
+        this.damageText(this.x, this.y, damage)
         
+        
+        //death
         if (this.hp <= 0) {
             this.disableBody();
             this.play("enemyDead")
@@ -46,6 +49,22 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
             }, 1000)
 
         }
+    }
+    damageText(x:number,y:number, damage:number) {
+        const textbox = this.scene.add.text(x,y,`${damage}`)
+        this.scene.tweens.add({
+            targets:textbox,
+            alpha:0,//밝기 0%
+            duration:1000,//지속시간(ms)
+            repeat:0,//반복(무한)
+            yoyo:false,//요요처리
+            ease:'Linear',//타이밍함수
+            y:'-=10',//y위치 10 감소
+            onComplete:(e,target)=>{
+                target[0].destroy();//완료된 텍스트 제거
+            }
+        });
+
     }
     preUpdate(time: number, delta: number) {
         super.preUpdate(time, delta)

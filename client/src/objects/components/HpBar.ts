@@ -22,6 +22,7 @@ export default class HpBar extends Phaser.GameObjects.Graphics {
         this.m_currentHp = maxHp;
         this.draw();
         this.setScrollFactor(0);
+        this.setDepth(999)
 
     }
 

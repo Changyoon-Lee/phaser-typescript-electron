@@ -6,7 +6,7 @@ import '../objects/Arrow.ts';
 import '../objects/Item.ts';
 import { getRandomPosition } from '../utils/math';
 import Enemy from '../objects/Enemy';
-import Item from 'src/objects/Item';
+import Item from '../objects/Item';
 
 
 
@@ -18,6 +18,8 @@ export default class PlayingScene extends Phaser.Scene {
     public m_attacks!: Phaser.GameObjects.Group
     public m_enemies!: Phaser.GameObjects.Group
     public m_items!: Phaser.GameObjects.Group
+    public m_itemCount!: { [key: string]:number};
+    public timer!: Phaser.GameObjects.BitmapText
     constructor() {
         super("playGame");
         console.log("playScene loaded")
@@ -25,10 +27,14 @@ export default class PlayingScene extends Phaser.Scene {
 
     create() {
         const { x, y, width, height } = this.cameras.main;//main camera의 좌표,크기정보
+        console.log("camera", width, height)
         const center = {
             x: Config.width / 2,
             y: Config.height / 2
         }
+        //timer
+        this.timer = this.add.bitmapText(300,32, "pixelFont","00", 40).setOrigin(0.5).setDepth(999)
+        this.timer.setScrollFactor(0);
         // sound
         this.sound.pauseOnBlur = false; // 게임화면 벗어났을때 소리 끄기
         this.soundGroup = {
@@ -41,14 +47,18 @@ export default class PlayingScene extends Phaser.Scene {
             m_deadSound: this.sound.add("audio_losing")
         }
         this.cursors = this.input.keyboard.createCursorKeys();
-
+        
         // background
-        this.m_background = this.add.tileSprite(0, 0, 1800, 1200, "background").setOrigin(0).setTileScale(0.5);
+        this.m_background = this.add.tileSprite(0, 0, 900, 600, "background").setOrigin(0,0).setTileScale(0.5);
         // this.m_background = this.add.image(x, y, "background").setOrigin(0).setScale(width / 1800, height / 1200);
-
+        this.physics.world.setBounds(0, 200, 900, 290,false,false);
         //player sprite object
         this.m_player = new Player(this, center.x, center.y)
 
+        //itemCount set
+        this.m_itemCount={}
+        this.resetItemCount()
+        console.log(this.m_itemCount)
         // 메인 카메라 이동
         this.cameras.main.startFollow(this.m_player)
         this.cameras.main.setLerp(1, 0); //y축으로는 안움직이게 
@@ -75,9 +85,12 @@ export default class PlayingScene extends Phaser.Scene {
 
 
     update(time: number, delta: number) {
+        
+        this.timer.setText('Timer: ' + Math.round(time/1000).toString())
+        console.log(this.timer.text)
         this.handlePlayerMove()
-        this.m_background.setX(this.m_player.x - Config.width) // 플레이어가 중앙이되는 배경위치설정
-        this.m_background.tilePositionX = this.m_player.x * 2 // 타일의 시작지점이 플레이어의 위치에따라변경
+        this.m_background.setX(this.m_player.x - Config.width/2) // 플레이어가 중앙이되는 배경위치설정
+        this.m_background.tilePositionX = this.m_player.x*2 // 타일의 시작지점이 플레이어의 위치에따라변경
         // console.log(this.m_player.x, this.m_player.y)
     }
 
@@ -123,6 +136,12 @@ export default class PlayingScene extends Phaser.Scene {
     getItem(item:Item) {
         console.log(item.name);
     }
+    resetItemCount() {
+        for (let item of Item.itemList) {
+            this.m_itemCount[item]=0
+            //.forEach((item)=> {.m_itemCount[item]=0})
+    }
+}
     upgradeEnemy(){}
     upgradeArrow(){}
     upgradePet(){}

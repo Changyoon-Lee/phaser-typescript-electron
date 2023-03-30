@@ -18,6 +18,7 @@ declare global {
       m_attacks: Phaser.GameObjects.Group;
       m_items: Phaser.GameObjects.Group;
       m_player: Player;
+      m_itemCount: {[key:string]:number};
       soundGroup: { [key: string]: Phaser.Sound.BaseSound }
     }
   }

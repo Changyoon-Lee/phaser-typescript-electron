@@ -14,6 +14,9 @@ export default class Loading extends Phaser.Scene {
 
         //item
         this.load.image("itemKey", "/assets/item/Icons/Icons_07.png")
+        this.load.image("itemRing", "/assets/item/Icons/Icons_37.png")
+        this.load.image("itemNecklace", "/assets/item/Icons/Icons_24.png")
+        this.load.image("itemForce", "/assets/item/Icons/Icons_26.png")
 
         //player
         this.load.spritesheet("playerIdle", "/assets/character/Samurai_Archer/Idle.png", { frameWidth: 128, frameHeight: 128 })

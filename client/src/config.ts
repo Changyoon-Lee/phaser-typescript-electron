@@ -16,8 +16,8 @@ const config: GameConfig = {
   scale: {
     mode: Phaser.Scale.FIT, //자동맞춤
     autoCenter: Phaser.Scale.CENTER_BOTH, //가로세로 모두 중앙 맞춤
-    width: window.innerWidth,
-    height: window.innerHeight,
+    // width: window.innerWidth,
+    // height: window.innerHeight,
   },
 };
 export default config;

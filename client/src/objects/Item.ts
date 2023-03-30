@@ -5,10 +5,10 @@ import Enemy from './Enemy';
 export default class Item extends Phaser.Physics.Arcade.Image {
     static DURATION = 10000;
     static itemList = [
-        "key",// 적 강화, 아이템 확률 증가
-        "ring", // 보조딜러 생성
-        "necklace", // 플레이어 힘을 배율로 증가
-        "force", // 플레이어 무기 강화를 위함 ,
+        "itemKey",// 적 강화, 아이템 확률 증가
+        "itemRing", // 보조딜러 생성
+        "itemNecklace", // 플레이어 힘을 배율로 증가
+        "itemForce", // 플레이어 무기 강화를 위함 ,
     ]
 
     constructor(scene: Phaser.Scene, enemy: Enemy) {
@@ -17,7 +17,9 @@ export default class Item extends Phaser.Physics.Arcade.Image {
         const radius = 10
         const x = enemy.x;
         const y = enemy.y;
-        super(scene, x, y, "itemKey");
+        const itemIdx = Phaser.Math.Between(0, Item.itemList.length-1);
+        super(scene, x, y, Item.itemList[itemIdx]);
+        
         this.scale = 1;
         scene.m_items.add(this);
         scene.physics.world.enableBody(this);
@@ -30,6 +32,10 @@ export default class Item extends Phaser.Physics.Arcade.Image {
     }
     collected(player:Player){
         // player방향으로 이동하면서 사라지도록
+        const itemName = this.texture.key
+        console.log(itemName)
+        this.scene.m_itemCount[itemName] += 1
+        this.scene.soundGroup.m_pickupSound.play()
         this.destroy()
     }
 }
@@ -39,7 +45,6 @@ export default class Item extends Phaser.Physics.Arcade.Image {
 // first parameter we will be able to use it in the Scene as this.add.arrow()
 Phaser.GameObjects.GameObjectFactory.register('item', function (this: Phaser.GameObjects.GameObjectFactory, enemy: Enemy) {
     const item = new Item(this.scene, enemy)
-
     this.displayList.add(item)
     // this.updateList.add(arrow) // preupdate 할게 있으면 추가
 
