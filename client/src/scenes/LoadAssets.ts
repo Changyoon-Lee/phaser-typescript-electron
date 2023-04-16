@@ -17,6 +17,7 @@ export default class Loading extends Phaser.Scene {
         this.load.image("itemRing", "/assets/item/Icons/Icons_37.png")
         this.load.image("itemNecklace", "/assets/item/Icons/Icons_24.png")
         this.load.image("itemForce", "/assets/item/Icons/Icons_26.png")
+        this.load.image("itemMoon", "/assets/item/Icons/Icons_16.png")
 
         //player
         this.load.spritesheet("playerIdle", "/assets/character/Samurai_Archer/Idle.png", { frameWidth: 128, frameHeight: 128 })
@@ -50,14 +51,14 @@ export default class Loading extends Phaser.Scene {
         //animation 설정
         this.anims.create({ key: "idle", frames: this.anims.generateFrameNumbers('playerIdle', {}), frameRate: 20, repeat: -1 })
         this.anims.create({ key: "walk", frames: this.anims.generateFrameNumbers('playerWalk', {}), frameRate: 8, repeat: -1 })
-        this.anims.create({ key: "shot", frames: this.anims.generateFrameNumbers('playerShot', {}), frameRate: 14 })
+        this.anims.create({ key: "shot", frames: this.anims.generateFrameNumbers('playerShot', {}), frameRate: 24, repeat: 0 })
         this.anims.create({ key: "dead", frames: this.anims.generateFrameNumbers('playerDead', {}), frameRate: 8 })
         this.anims.create({ key: "hurt", frames: this.anims.generateFrameNumbers('playerHurt', {}), frameRate: 8 })
         this.anims.create({ key: "explosion", frames: this.anims.generateFrameNumbers('explosion', {}), frameRate: 16 })
 
         this.anims.create({ key: "enemyWalk", frames: this.anims.generateFrameNumbers('enemyWalk', {}), frameRate: 14, repeat: -1 })
         this.anims.create({ key: "enemyHurt", frames: this.anims.generateFrameNumbers('enemyHurt', {}), frameRate: 8 })
-        this.anims.create({ key: "enemyDead", frames: this.anims.generateFrameNumbers('enemyDead', {}), frameRate: 8 })
+        this.anims.create({ key: "enemyDead", frames: this.anims.generateFrameNumbers('enemyDead', {}), frameRate: 1 })
         this.anims.create({ key: "enemyAttack", frames: this.anims.generateFrameNumbers('enemyAttack', {}), frameRate: 8 })
 
         //

@@ -27,6 +27,8 @@ declare global {
       upgradePet(): void
       upgradeDamage(): void
       drawItemUI(): void
+      winGame(): void
+      loseGame(): void
     }
   }
   namespace Phaser.GameObjects {

@@ -6,25 +6,28 @@ export interface EnemyStat {
     hp: number
     scale: number
     texture: string
+    speed: number
+    damage: number
 }
 interface EnemyLevelStat {
     [key: number]: EnemyStat
 }
 export default class Enemy extends Phaser.Physics.Arcade.Sprite {
     static enemyStat: EnemyLevelStat = {
-        1: { hp: 10, scale: 1, texture: "enemy" },
-        2: { hp: 20, scale: 1.5, texture: "enemy" },
-        3: { hp: 40, scale: 2, texture: "enemy" },
-        4: { hp: 80, scale: 2.5, texture: "enemy" },
-        5: { hp: 160, scale: 3, texture: "enemy" },
-        6: { hp: 320, scale: 3.5, texture: "enemy" },
-        7: { hp: 640, scale: 4, texture: "enemy" },
-        8: { hp: 1280, scale: 4.5, texture: "enemy" },
-        9: { hp: 2560, scale: 5, texture: "enemy" },
-        10: { hp: 5120, scale: 5.5, texture: "enemy" },
+        1: { hp: 10, scale: 1, texture: "enemy", speed: 100, damage: 10 },
+        2: { hp: 20, scale: 1.1, texture: "enemy", speed: 100, damage: 11 },
+        3: { hp: 40, scale: 1.2, texture: "enemy", speed: 100, damage: 12 },
+        4: { hp: 80, scale: 1.3, texture: "enemy", speed: 100, damage: 13 },
+        5: { hp: 160, scale: 1.4, texture: "enemy", speed: 100, damage: 14 },
+        6: { hp: 320, scale: 1.5, texture: "enemy", speed: 100, damage: 16 },
+        7: { hp: 640, scale: 1.6, texture: "enemy", speed: 100, damage: 20 },
+        8: { hp: 1280, scale: 1.7, texture: "enemy", speed: 100, damage: 25 },
+        9: { hp: 2560, scale: 1.8, texture: "enemy", speed: 100, damage: 30 },
+        10: { hp: 51200, scale: 3, texture: "enemy", speed: 25, damage: 100 },
     }
 
     public speed!: number
+    public damage!: number
     public hp!: number
     public m_events!: Phaser.Time.TimerEvent[]
     constructor(scene: Phaser.Scene, x: number, y: number, enemyStat: EnemyStat) {
@@ -34,9 +37,10 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.setBodySize(16, 64, true)
         this.setOffset(128 / 2 - 16 / 2, 128 - 64)
         this.setCollideWorldBounds(true) // 설정한 범위만 움직이도록
-        this.speed = 100
+        this.speed = enemyStat.speed
         this.hp = enemyStat.hp
         this.scale = enemyStat.scale;
+        this.damage = enemyStat.damage
         this.play("enemyWalk", true)
 
         // this.on("overlapstart", (attack: any) => {
@@ -52,7 +56,8 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
             loop: true,
         }));
     }
-    hit(attack: Arrow, power: number) {
+    hit(attack: Arrow, power: number) {//화살에 한번에 여러 오브젝트와 다으면 에러생기는듯?
+        if (!attack.body) return
         this.scene.add.explosion(attack.body.x, attack.body.y)
         const damage = attack.arrowStat.damage * power
         attack.destroy();

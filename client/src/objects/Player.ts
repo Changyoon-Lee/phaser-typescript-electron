@@ -6,6 +6,7 @@ import HpBar from './components/HpBar';
 export default class Player extends Phaser.Physics.Arcade.Sprite {
     public playerState
     public m_hpBar!: HpBar
+    public shootArrowEvent!: Phaser.Time.TimerEvent;
     constructor(scene: Phaser.Scene, x: number, y: number) {
         super(scene, x, y, "playerIdle")
 
@@ -31,8 +32,8 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         this.m_hpBar = this.scene.add.hpBar(this, 100);
 
         //주기적으로 아래 함수 실행
-        scene.time.addEvent({
-            delay: 400,
+        this.shootArrowEvent = scene.time.addEvent({
+            delay: 1000,
             callback: () => {
                 this.shootArrow()
             },
@@ -64,7 +65,8 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         if (this.m_hpBar.m_currentHp <= 0) {
             // 게임오버
             this.scene.soundGroup.m_deadSound.play();
-            this.scene.scene.start("gameoverScene", this.scene.m_itemCount)
+            this.scene.loseGame()
+            return
         }
         this.playerState.onHurt = true
         this.alpha = 0.5
@@ -80,11 +82,6 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     }
     shootArrow() {
         this.playerState.onAttack = true
-        setTimeout(() => {
-            this.scene.add.arrow(this, Arrow.arrowStatList[this.scene.arrowLevel])
-        })
-
-        // setTimeout(() => { this.playerState.onAttack = false }, 1000)
+        console.log("공격시작")
     }
-
 }

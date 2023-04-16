@@ -7,7 +7,7 @@ import '../objects/Item.ts';
 import { getRandomPosition } from '../utils/math';
 import Enemy from '../objects/Enemy';
 import Item from '../objects/Item';
-import Arrow from 'src/objects/Arrow';
+import Arrow from '../objects/Arrow';
 
 
 
@@ -24,7 +24,8 @@ export default class PlayingScene extends Phaser.Scene {
     public timer!: Phaser.GameObjects.BitmapText
     public enemyLevel!: number;
     public arrowLevel!: number;
-
+    public addEnemyEvent!: Phaser.Time.TimerEvent;
+    public gameOver!: boolean;
     constructor() {
         super("playGame");
     }
@@ -82,19 +83,28 @@ export default class PlayingScene extends Phaser.Scene {
             (enemy as Enemy).hit((attack as Arrow), this.m_player.playerState.power)
         }, undefined, this);
         this.physics.add.overlap(this.m_player, this.m_enemies, (player, enemy): void => {
-            (player as Player).hitByEnemy(10);
+            const enemy_ = enemy as Enemy // 이거 이렇게 밖에 못해?
+            (player as Player).hitByEnemy(enemy_.damage);
         }, undefined, this);
         this.physics.add.overlap(this.m_player, this.m_items, (player, item): void => {
             (item as Item).collected(player as Player);
         }, undefined, this);
+        this.m_player.on("animationcomplete-shot", () => {
+            console.log("공격종료")
+            this.add.arrow(this.m_player, Arrow.arrowStatList[this.arrowLevel])
+
+            this.m_player.playerState.onAttack = false;
+        })
     }
 
 
     update(time: number, delta: number) {
         // 게임 새로 시작할때 타임 0으로 안돼는 버그 있음
-        this.timer.setText('Timer: ' + Math.round(time / 1000).toString())
+        if (!this.gameOver) {
+            this.timer.setText('Timer: ' + Math.round(time / 1000).toString())
+            this.handlePlayerMove()
+        }
 
-        this.handlePlayerMove()
         this.m_background.setX(this.m_player.x - Config.width / 2) // 플레이어가 중앙이되는 배경위치설정
         this.m_background.tilePositionX = this.m_player.x * 2 // 타일의 시작지점이 플레이어의 위치에따라변경
         // console.log(this.m_player.x, this.m_player.y)
@@ -119,8 +129,10 @@ export default class PlayingScene extends Phaser.Scene {
         }
         this.m_player.playerState.onMove = isMove;
         if (this.m_player.playerState.onAttack === true) {
-            this.m_player.play('shot', true)
-        } else {
+            this.m_player.anims.play("shot", true);
+
+        }
+        else {
             if (!isMove) {
                 this.m_player.play('idle', true);
             } else {
@@ -130,8 +142,8 @@ export default class PlayingScene extends Phaser.Scene {
     }
 
     addEnemy() {
-        this.time.addEvent({
-            delay: 1000,
+        this.addEnemyEvent = this.time.addEvent({
+            delay: 2000,
             callback: () => {
                 let [x, y] = getRandomPosition(this.m_player.x, this.m_player.y);
                 this.m_enemies.add(this.add.enemy(x, y, Enemy.enemyStat[this.enemyLevel]));
@@ -174,5 +186,45 @@ export default class PlayingScene extends Phaser.Scene {
             y += yDist
         }
         console.log(this.m_itemCount)
+    }
+    winGame() {
+        // 적 모두 제거, 승리bgm 재생, 플레이어 공격 중지, 5초 후 점수 창으로 이동
+        this.gameOver = true
+        this.physics.destroy()
+        this.addEnemyEvent.remove(false)// 적 더이상 나오지 않게하기, false를 주어 삭제할때 이벤트 작동안하도록 함(true면 삭제할때 이벤트발동)
+        this.m_enemies.destroy(true) //그룹내 오브젝트 모두 삭제
+        this.m_player.shootArrowEvent.remove(false) // 플레이어도 공격 멈추기
+        this.soundGroup.m_completeSound.play()// win 브금 재생
+
+        this.time.addEvent({
+            delay: 5000,
+            callback: () => {
+                this.goToGameOverScene(true)
+            },//.bind(this),
+            loop: true,
+        })
+
+    }
+    loseGame() {
+        // 적 모두 제거, 승리bgm 재생, 플레이어 공격 중지, 5초 후 점수 창으로 이동
+        this.gameOver = true
+        this.physics.destroy()
+        this.time.removeAllEvents()
+        // this.addEnemyEvent.remove(false)// 적 더이상 나오지 않게하기, false를 주어 삭제할때 이벤트 작동안하도록 함(true면 삭제할때 이벤트발동)
+        // this.m_enemies.destroy(true) //그룹내 오브젝트 모두 삭제
+        // this.m_player.shootArrowEvent.remove(false) // 플레이어도 공격 멈추기
+        this.m_player.playerState.onAttack = false
+        this.m_player.play("dead", true)
+        this.soundGroup.m_completeSound.play()// win 브금 재생
+        this.time.addEvent({
+            delay: 5000,
+            callback: () => {
+                this.goToGameOverScene(false)
+            },//.bind(this),
+            loop: true,
+        })
+    }
+    goToGameOverScene(isWin: boolean) {
+        this.scene.start("gameoverScene", { itemCount: this.m_itemCount, timer: this.timer.text, isWin })
     }
 }
