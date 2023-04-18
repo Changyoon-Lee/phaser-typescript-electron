@@ -27,7 +27,7 @@ const createWindow = () => {
   // and load the index.html of the app.
   //mainWindow.loadFile(__dirname, "./app/index.html")
   if (!isDevelopment) mainWindow.loadURL('file://' + path.join(__dirname, '..') + '/electron/app/index.html');
-  else mainWindow.loadURL('http://localhost:3000');
+  else mainWindow.loadURL('http://localhost:3001');
 
   // Open the DevTools.
   if (isDevelopment) mainWindow.webContents.openDevTools()

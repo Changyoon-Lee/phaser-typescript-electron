@@ -26,6 +26,7 @@ export default class PlayingScene extends Phaser.Scene {
     public arrowLevel!: number;
     public addEnemyEvent!: Phaser.Time.TimerEvent;
     public gameOver!: boolean;
+    public timedEvent!: Phaser.Time.TimerEvent;
     constructor() {
         super("playGame");
     }
@@ -38,8 +39,10 @@ export default class PlayingScene extends Phaser.Scene {
             y: Config.height / 2
         }
         //timer
+        this.timedEvent = new Phaser.Time.TimerEvent({ delay: 5 * 60 * 1000 })//5분이내에 깨야함
         this.timer = this.add.bitmapText(300, 32, "pixelFont", "00", 40).setOrigin(0.5).setDepth(999)
         this.timer.setScrollFactor(0);
+        this.time.addEvent(this.timedEvent);
         // sound
         this.sound.pauseOnBlur = false; // 게임화면 벗어났을때 소리 끄기
         this.soundGroup = {
@@ -79,20 +82,23 @@ export default class PlayingScene extends Phaser.Scene {
         this.arrowLevel = 1;
         this.addEnemy()
         // collisions
+        // 공격(여기선 화살)과 적 충돌시
         this.physics.add.overlap(this.m_attacks, this.m_enemies, (attack, enemy): void => {
             (enemy as Enemy).hit((attack as Arrow), this.m_player.playerState.power)
         }, undefined, this);
+        //플레이어와 적 충돌시
         this.physics.add.overlap(this.m_player, this.m_enemies, (player, enemy): void => {
             const enemy_ = enemy as Enemy // 이거 이렇게 밖에 못해?
             (player as Player).hitByEnemy(enemy_.damage);
         }, undefined, this);
+        //플레이어와 아이템 충돌시
         this.physics.add.overlap(this.m_player, this.m_items, (player, item): void => {
             (item as Item).collected(player as Player);
         }, undefined, this);
-        this.m_player.on("animationcomplete-shot", () => {
-            console.log("공격종료")
-            this.add.arrow(this.m_player, Arrow.arrowStatList[this.arrowLevel])
 
+        //에니메이션이 끝나는 시점에 화살발사, state변경해주기
+        this.m_player.on("animationcomplete-shot", () => {
+            this.add.arrow(this.m_player, Arrow.arrowStatList[this.arrowLevel])
             this.m_player.playerState.onAttack = false;
         })
     }
@@ -101,12 +107,13 @@ export default class PlayingScene extends Phaser.Scene {
     update(time: number, delta: number) {
         // 게임 새로 시작할때 타임 0으로 안돼는 버그 있음
         if (!this.gameOver) {
-            this.timer.setText('Timer: ' + Math.round(time / 1000).toString())
+            const timeLeft = this.timedEvent.getRemainingSeconds();
+            this.timer.setText('Timer: ' + Math.round(timeLeft).toString())
             this.handlePlayerMove()
+            this.m_background.setX(this.m_player.x - Config.width / 2) // 플레이어가 중앙이되는 배경위치설정
+            this.m_background.tilePositionX = this.m_player.x * 2 // 타일의 시작지점이 플레이어의 위치에따라변경
         }
 
-        this.m_background.setX(this.m_player.x - Config.width / 2) // 플레이어가 중앙이되는 배경위치설정
-        this.m_background.tilePositionX = this.m_player.x * 2 // 타일의 시작지점이 플레이어의 위치에따라변경
         // console.log(this.m_player.x, this.m_player.y)
     }
 
@@ -190,10 +197,10 @@ export default class PlayingScene extends Phaser.Scene {
     winGame() {
         // 적 모두 제거, 승리bgm 재생, 플레이어 공격 중지, 5초 후 점수 창으로 이동
         this.gameOver = true
-        this.physics.destroy()
-        this.addEnemyEvent.remove(false)// 적 더이상 나오지 않게하기, false를 주어 삭제할때 이벤트 작동안하도록 함(true면 삭제할때 이벤트발동)
-        this.m_enemies.destroy(true) //그룹내 오브젝트 모두 삭제
-        this.m_player.shootArrowEvent.remove(false) // 플레이어도 공격 멈추기
+        this.time.removeAllEvents() // 모든 timer이벤트 삭제
+        this.time.clearPendingEvents() //pending 중인 이벤트가 있으면 오류 생기기때문에 같이 제거해주어야한다
+        this.m_enemies.destroy(true, true)//그룹내 오브젝트 모두 삭제
+        this.m_player.play("idle")
         this.soundGroup.m_completeSound.play()// win 브금 재생
 
         this.time.addEvent({
@@ -208,7 +215,6 @@ export default class PlayingScene extends Phaser.Scene {
     loseGame() {
         // 적 모두 제거, 승리bgm 재생, 플레이어 공격 중지, 5초 후 점수 창으로 이동
         this.gameOver = true
-        this.physics.destroy()
         this.time.removeAllEvents()
         // this.addEnemyEvent.remove(false)// 적 더이상 나오지 않게하기, false를 주어 삭제할때 이벤트 작동안하도록 함(true면 삭제할때 이벤트발동)
         // this.m_enemies.destroy(true) //그룹내 오브젝트 모두 삭제

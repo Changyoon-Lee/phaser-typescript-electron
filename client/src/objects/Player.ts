@@ -65,6 +65,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         if (this.m_hpBar.m_currentHp <= 0) {
             // 게임오버
             this.scene.soundGroup.m_deadSound.play();
+            this.disableBody(false, false)// 충돌 물리이벤트 작동하지 않도록 비활성화시키기
             this.scene.loseGame()
             return
         }

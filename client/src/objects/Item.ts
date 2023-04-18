@@ -9,6 +9,7 @@ export default class Item extends Phaser.Physics.Arcade.Image {
         "itemRing", // 보조딜러 생성
         "itemNecklace", // 플레이어 힘을 배율로 증가
         "itemForce", // 플레이어 무기 강화를 위함 ,
+        "itemMoon"
     ]
 
     constructor(scene: Phaser.Scene, enemy: Enemy) {
@@ -16,7 +17,12 @@ export default class Item extends Phaser.Physics.Arcade.Image {
         const radius = 30
         const x = enemy.x;
         const y = enemy.y;
-        const itemIdx = Phaser.Math.Between(0, Item.itemList.length - 1); // 램덤숫자 생성
+        let itemIdx = 0
+        if (enemy.hp < 50000) {
+            itemIdx = Phaser.Math.Between(0, Item.itemList.length - 2); // 램덤숫자 생성
+        } else {
+            itemIdx = Item.itemList.length - 1; // 램덤숫자 생성
+        }
         super(scene, x, y + enemy.body.height - 10, Item.itemList[itemIdx]); // 랜덤 아이템 생성
 
         this.scale = 1;
@@ -49,6 +55,8 @@ export default class Item extends Phaser.Physics.Arcade.Image {
                     this.scene.upgradeDamage()
                 case "itemForce":
                     this.scene.upgradeArrow()
+                case "itemMoon"://Moon 아이템 5개 모으면 게임 승리
+                    this.scene.winGame()
 
             }
         }
